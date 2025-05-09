@@ -20,10 +20,10 @@ const TranscriptDisplay: React.FC<TranscriptDisplayProps> = ({ transcript, isPro
       )}
       
       {isProcessing && (
-        <div className="flex space-x-1 mt-2">
-          <div className="typing-indicator"></div>
-          <div className="typing-indicator"></div>
-          <div className="typing-indicator"></div>
+        <div className="flex space-x-2 mt-3">
+          <div className="w-2 h-2 bg-secondary rounded-full animate-pulse"></div>
+          <div className="w-2 h-2 bg-secondary rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+          <div className="w-2 h-2 bg-secondary rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
         </div>
       )}
     </div>
