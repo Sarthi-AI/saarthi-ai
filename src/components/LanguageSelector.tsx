@@ -22,8 +22,10 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
         <button
           key={lang.code}
           onClick={() => onLanguageChange(lang.code)}
-          className={`language-toggle text-sm font-medium ${
-            currentLanguage === lang.code ? 'active' : 'bg-accent text-primary-dark'
+          className={`px-4 py-2 rounded-md transition-colors ${
+            currentLanguage === lang.code 
+              ? 'bg-primary text-white shadow-md' 
+              : 'bg-accent text-primary-dark hover:bg-accent/70'
           }`}
         >
           {lang.name}

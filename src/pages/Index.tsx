@@ -1,8 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import LanguageSelector from '@/components/LanguageSelector';
 import MicrophoneButton from '@/components/MicrophoneButton';
+import TextInput from '@/components/TextInput';
 import TranscriptDisplay from '@/components/TranscriptDisplay';
 import ResponseSection from '@/components/ResponseSection';
 import { sampleSchemes } from '@/data/sampleSchemes';
@@ -14,7 +14,7 @@ const messages = {
   en: {
     title: "Find the right government scheme for you",
     subtitle: "Ask about any government scheme by speaking or typing",
-    instruction: "Press the microphone button and start speaking",
+    instruction: "Press the microphone button and start speaking or type your question below",
     placeholder: "Type your question here...",
     searchButton: "Search",
     example1: "What schemes are available for women entrepreneurs?",
@@ -24,7 +24,7 @@ const messages = {
   hi: {
     title: "आपके लिए सही सरकारी योजना खोजें",
     subtitle: "बोलकर या टाइप करके किसी भी सरकारी योजना के बारे में पूछें",
-    instruction: "माइक्रोफोन बटन दबाएं और बोलना शुरू करें",
+    instruction: "माइक्रोफोन बटन दबाएं और बोलना शुरू करें या नीचे अपना प्रश्न टाइप करें",
     placeholder: "अपना प्रश्न यहां लिखें...",
     searchButton: "खोजें",
     example1: "महिला उद्यमियों के लिए कौन सी योजनाएं उपलब्ध हैं?",
@@ -34,7 +34,7 @@ const messages = {
   kn: {
     title: "ನಿಮಗೆ ಸರಿಯಾದ ಸರ್ಕಾರಿ ಯೋಜನೆಯನ್ನು ಹುಡುಕಿ",
     subtitle: "ಮಾತನಾಡುವ ಅಥವಾ ಟೈಪ್ ಮಾಡುವ ಮೂಲಕ ಯಾವುದೇ ಸರ್ಕಾರಿ ಯೋಜನೆಯ ಬಗ್ಗೆ ಕೇಳಿ",
-    instruction: "ಮೈಕ್ರೋಫೋನ್ ಬಟನ್ ಒತ್ತಿ ಮತ್ತು ಮಾತನಾಡಲು ಪ್ರಾರಂಭಿಸಿ",
+    instruction: "ಮೈಕ್ರೋಫೋನ್ ಬಟನ್ ಒತ್ತಿ ಮತ್ತು ಮಾತನಾಡಲು ಪ್ರಾರಂಭಿಸಿ ಅಥವಾ ಕೆಳಗೆ ನಿಮ್ಮ ಪ್ರश್ನೆಯನ್ನು ಟೈಪ್ ಮಾಡಿ",
     placeholder: "ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ಇಲ್ಲಿ ಟೈಪ್ ಮಾಡಿ...",
     searchButton: "ಹುಡುಕಿ",
     example1: "ಮಹಿಳಾ ಉದ್ಯಮಿಗಳಿಗೆ ಯಾವ ಯೋಜನೆಗಳು ಲಭ್ಯವಿದೆ?",
@@ -92,6 +92,12 @@ const Index = () => {
   // Function to stop listening
   const stopListening = () => {
     setIsListening(false);
+  };
+
+  // Function to handle text input submission
+  const handleTextSubmit = (text: string) => {
+    setTranscript(text);
+    processQuery(text);
   };
 
   // Function to process the query and find matching schemes
@@ -175,7 +181,7 @@ const Index = () => {
           </p>
         </div>
         
-        <div className="flex flex-col items-center mb-12">
+        <div className="flex flex-col items-center mb-8">
           <LanguageSelector 
             currentLanguage={language} 
             onLanguageChange={handleLanguageChange} 
@@ -186,15 +192,25 @@ const Index = () => {
             isProcessing={isProcessing} 
           />
           
-          <div className="flex flex-col items-center space-y-4">
-            <MicrophoneButton 
-              isListening={isListening} 
-              onStartListening={startListening} 
-              onStopListening={stopListening} 
+          <div className="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-6 mb-6">
+            <div className="flex flex-col items-center">
+              <MicrophoneButton 
+                isListening={isListening} 
+                onStartListening={startListening} 
+                onStopListening={stopListening} 
+              />
+              <p className="text-sm text-gray-500 mt-2">
+                {isListening ? "Listening..." : "Speak"}
+              </p>
+            </div>
+            
+            <div className="text-sm text-gray-500 hidden md:block">or</div>
+            
+            <TextInput 
+              placeholder={messages[language as keyof typeof messages].placeholder}
+              onSubmit={handleTextSubmit}
+              buttonText={messages[language as keyof typeof messages].searchButton}
             />
-            <p className="text-sm text-gray-500">
-              {isListening ? "Listening..." : messages[language as keyof typeof messages].instruction}
-            </p>
           </div>
         </div>
         
