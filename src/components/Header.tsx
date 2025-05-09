@@ -29,6 +29,9 @@ const Header = () => {
           <Link to="/about" className="text-gray-700 hover:text-primary transition-colors">
             About
           </Link>
+          <Link to="/grievance" className="text-gray-700 hover:text-primary transition-colors">
+            File Grievance
+          </Link>
           <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white">
             Feedback
           </Button>
