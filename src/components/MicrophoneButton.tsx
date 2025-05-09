@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React from 'react';
 import { Mic, MicOff } from 'lucide-react';
 
 interface MicrophoneButtonProps {
@@ -23,13 +23,13 @@ const MicrophoneButton: React.FC<MicrophoneButtonProps> = ({
 
   return (
     <button
-      className={`mic-button ${isListening ? 'active' : ''}`}
+      className={`mic-button relative flex items-center justify-center w-16 h-16 rounded-full bg-primary text-white shadow-lg hover:bg-primary/90 transition-colors ${isListening ? 'active' : ''}`}
       onClick={handleClick}
       aria-label={isListening ? "Stop listening" : "Start listening"}
     >
       {isListening ? <MicOff size={24} /> : <Mic size={24} />}
       {isListening && (
-        <div className="absolute -inset-1 rounded-full border-4 border-secondary opacity-75"></div>
+        <div className="absolute -inset-1 rounded-full border-4 border-secondary opacity-75 animate-pulse"></div>
       )}
     </button>
   );

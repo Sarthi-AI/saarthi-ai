@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useRef } from 'react';
 import Header from '@/components/Header';
 import LanguageSelector from '@/components/LanguageSelector';
 import MicrophoneButton from '@/components/MicrophoneButton';
@@ -34,7 +35,7 @@ const messages = {
   kn: {
     title: "ನಿಮಗೆ ಸರಿಯಾದ ಸರ್ಕಾರಿ ಯೋಜನೆಯನ್ನು ಹುಡುಕಿ",
     subtitle: "ಮಾತನಾಡುವ ಅಥವಾ ಟೈಪ್ ಮಾಡುವ ಮೂಲಕ ಯಾವುದೇ ಸರ್ಕಾರಿ ಯೋಜನೆಯ ಬಗ್ಗೆ ಕೇಳಿ",
-    instruction: "ಮೈಕ್ರೋಫೋನ್ ಬಟನ್ ಒತ್ತಿ ಮತ್ತು ಮಾತನಾಡಲು ಪ್ರಾರಂಭಿಸಿ ಅಥವಾ ಕೆಳಗೆ ನಿಮ್ಮ ಪ್ರश್ನೆಯನ್ನು ಟೈಪ್ ಮಾಡಿ",
+    instruction: "ಮೈಕ್ರೋಫೋನ್ ಬಟನ್ ಒತ್ತಿ ಮತ್ತು ಮಾತನಾಡಲು ಪ್ರಾರಂಭಿಸಿ ಅಥವಾ ಕೆಳಗೆ ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ಟೈಪ್ ಮಾಡಿ",
     placeholder: "ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ಇಲ್ಲಿ ಟೈಪ್ ಮಾಡಿ...",
     searchButton: "ಹುಡುಕಿ",
     example1: "ಮಹಿಳಾ ಉದ್ಯಮಿಗಳಿಗೆ ಯಾವ ಯೋಜನೆಗಳು ಲಭ್ಯವಿದೆ?",
@@ -50,6 +51,78 @@ const Index = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [schemes, setSchemes] = useState<Scheme[]>([]);
   const [responseMessage, setResponseMessage] = useState('');
+  
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
+
+  // Initialize speech recognition
+  useEffect(() => {
+    if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+      // Browser supports speech recognition
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = true;
+      recognitionRef.current.interimResults = true;
+
+      recognitionRef.current.onresult = (event) => {
+        const current = event.resultIndex;
+        if (event.results[current].isFinal) {
+          const result = event.results[current][0].transcript;
+          setTranscript(result);
+          
+          // Auto-process when speech recognition ends
+          if (result.trim() !== '') {
+            processQuery(result);
+          }
+        } else {
+          // Update transcript with interim results
+          const interim = event.results[current][0].transcript;
+          setTranscript(interim);
+        }
+      };
+
+      recognitionRef.current.onerror = (event) => {
+        console.error('Speech recognition error', event.error);
+        setIsListening(false);
+        toast({
+          title: "Error",
+          description: `Speech recognition error: ${event.error}`,
+          variant: "destructive"
+        });
+      };
+
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
+      };
+      
+      // Set language for speech recognition based on user selection
+      const updateRecognitionLanguage = () => {
+        if (recognitionRef.current) {
+          switch(language) {
+            case 'en':
+              recognitionRef.current.lang = 'en-US';
+              break;
+            case 'hi':
+              recognitionRef.current.lang = 'hi-IN';
+              break;
+            case 'kn':
+              recognitionRef.current.lang = 'kn-IN';
+              break;
+            default:
+              recognitionRef.current.lang = 'en-US';
+          }
+        }
+      };
+      
+      updateRecognitionLanguage();
+    } else {
+      // Browser doesn't support speech recognition
+      toast({
+        title: "Not supported",
+        description: "Your browser doesn't support speech recognition. Try using Chrome.",
+        variant: "destructive"
+      });
+    }
+  }, [language]); // Re-initialize when language changes
 
   // Function to handle language change
   const handleLanguageChange = (lang: string) => {
@@ -60,38 +133,31 @@ const Index = () => {
     setResponseMessage('');
   };
 
-  // Mock function to simulate voice recognition
+  // Function to start speech recognition
   const startListening = () => {
-    setIsListening(true);
-    setTranscript('');
-    setIsProcessing(true);
-    
-    // Simulate voice recognition (in a real app, use the Web Speech API)
-    setTimeout(() => {
-      const demoQueries = [
-        "I need a loan to start a small business",
-        "मुझे एक छोटा व्यापार शुरू करने के लिए ऋण की आवश्यकता है",
-        "ನನಗೆ ಒಂದು ಚಿಕ್ಕ ವ್ಯಾಪಾರ ಪ್ರಾರಂಭಿಸಲು ಸಾಲ ಬೇಕು"
-      ];
-      
-      // Select a demo query based on current language
-      let index = 0;
-      if (language === 'hi') index = 1;
-      if (language === 'kn') index = 2;
-      
-      setTranscript(demoQueries[index]);
-      setIsListening(false);
-      
-      // Process the query after a short delay
-      setTimeout(() => {
-        processQuery(demoQueries[index]);
-      }, 1000);
-    }, 2000);
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.start();
+        setIsListening(true);
+        setTranscript('');
+        setIsProcessing(false);
+      } catch (error) {
+        console.error('Error starting speech recognition:', error);
+        toast({
+          title: "Error",
+          description: "Failed to start speech recognition. Please try again.",
+          variant: "destructive"
+        });
+      }
+    }
   };
 
-  // Function to stop listening
+  // Function to stop speech recognition
   const stopListening = () => {
-    setIsListening(false);
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    }
   };
 
   // Function to handle text input submission

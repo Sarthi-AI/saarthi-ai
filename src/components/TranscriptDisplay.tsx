@@ -8,7 +8,7 @@ interface TranscriptDisplayProps {
 
 const TranscriptDisplay: React.FC<TranscriptDisplayProps> = ({ transcript, isProcessing }) => {
   return (
-    <div className="w-full max-w-2xl bg-white rounded-lg shadow-md p-4 mb-6">
+    <div className="w-full max-w-2xl bg-white rounded-lg shadow-md p-4 mb-6 min-h-[100px]">
       <h3 className="text-sm font-medium text-gray-500 mb-2">You said:</h3>
       
       {transcript ? (
