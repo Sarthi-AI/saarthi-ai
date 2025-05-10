@@ -122,7 +122,9 @@ const Index = () => {
         variant: "destructive"
       });
     }
-  }, [language]); // Re-initialize when language changes
+  },
+    // [language]
+  ); // Re-initialize when language changes
 
   // Function to handle language change
   const handleLanguageChange = (lang: string) => {
