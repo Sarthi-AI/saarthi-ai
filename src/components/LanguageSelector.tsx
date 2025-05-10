@@ -6,13 +6,13 @@ interface LanguageSelectorProps {
   onLanguageChange: (language: string) => void;
 }
 
-const LanguageSelector: React.FC<LanguageSelectorProps> = ({ 
-  currentLanguage, 
-  onLanguageChange 
+const LanguageSelector: React.FC<LanguageSelectorProps> = ({
+  currentLanguage,
+  onLanguageChange
 }) => {
   const languages = [
     { code: 'en', name: 'English' },
-    { code: 'hi', name: 'हिंदी' },
+    // { code: 'hi', name: 'हिंदी' },
     { code: 'kn', name: 'ಕನ್ನಡ' }
   ];
 
@@ -22,11 +22,10 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
         <button
           key={lang.code}
           onClick={() => onLanguageChange(lang.code)}
-          className={`px-4 py-2 rounded-md transition-colors ${
-            currentLanguage === lang.code 
-              ? 'bg-primary text-white shadow-md' 
+          className={`px-4 py-2 rounded-md transition-colors ${currentLanguage === lang.code
+              ? 'bg-primary text-white shadow-md'
               : 'bg-accent text-primary-dark hover:bg-accent/70'
-          }`}
+            }`}
         >
           {lang.name}
         </button>

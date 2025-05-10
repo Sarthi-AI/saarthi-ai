@@ -1,13 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Header from '@/components/Header';
 import LanguageSelector from '@/components/LanguageSelector';
-import MicrophoneButton from '@/components/MicrophoneButton';
-import TextInput from '@/components/TextInput';
-import TranscriptDisplay from '@/components/TranscriptDisplay';
 import ResponseSection from '@/components/ResponseSection';
-import { sampleSchemes } from '@/data/sampleSchemes';
 import { Scheme } from '@/components/SchemeCard';
-import { toast } from '@/components/ui/use-toast';
+import ChatBot from '@/components/ChatBot';
 
 // Language messages for multilingual support
 const messages = {
@@ -19,17 +15,10 @@ const messages = {
     searchButton: "Search",
     example1: "What schemes are available for women entrepreneurs?",
     example2: "I'm a farmer looking for subsidies for irrigation",
-    example3: "Are there schemes for education loans?"
-  },
-  hi: {
-    title: "आपके लिए सही सरकारी योजना खोजें",
-    subtitle: "बोलकर या टाइप करके किसी भी सरकारी योजना के बारे में पूछें",
-    instruction: "माइक्रोफोन बटन दबाएं और बोलना शुरू करें या नीचे अपना प्रश्न टाइप करें",
-    placeholder: "अपना प्रश्न यहां लिखें...",
-    searchButton: "खोजें",
-    example1: "महिला उद्यमियों के लिए कौन सी योजनाएं उपलब्ध हैं?",
-    example2: "मैं सिंचाई के लिए सब्सिडी की तलाश में एक किसान हूं",
-    example3: "क्या शिक्षा ऋण के लिए योजनाएं हैं?"
+    example3: "Are there schemes for education loans?",
+    embedUrl: "https://app.toughtongueai.com/embed/minimal/681edba37b6fcab35eb0da42?pulse=true&bg=blue-900&hidePoweredBy=true&transcribe=true&buttonStartLabel=Ask+Query&buttonStopLabel=Done",
+    goToChat: "Go to Audio",
+    goToAudio: "Go to Chat"
   },
   kn: {
     title: "ನಿಮಗೆ ಸರಿಯಾದ ಸರ್ಕಾರಿ ಯೋಜನೆಯನ್ನು ಹುಡುಕಿ",
@@ -39,203 +28,41 @@ const messages = {
     searchButton: "ಹುಡುಕಿ",
     example1: "ಮಹಿಳಾ ಉದ್ಯಮಿಗಳಿಗೆ ಯಾವ ಯೋಜನೆಗಳು ಲಭ್ಯವಿದೆ?",
     example2: "ನಾನು ನೀರಾವರಿಗಾಗಿ ಸಬ್ಸಿಡಿ ಹುಡುಕುತ್ತಿರುವ ರೈತ",
-    example3: "ಶಿಕ್ಷಣ ಸಾಲಕ್ಕೆ ಯೋಜನೆಗಳಿವೆಯೇ?"
+    example3: "ಶಿಕ್ಷಣ ಸಾಲಕ್ಕೆ ಯೋಜನೆಗಳಿವೆಯೇ?",
+    embedUrl: "https://app.toughtongueai.com/embed/minimal/681edf157b6fcab35eb0da4b?pulse=true&bg=blue-900",
+    goToChat: "Go to Chat",
+    goToAudio: "Go to Audio(Kannada)"
   }
 };
 
 const Index = () => {
   const [language, setLanguage] = useState('en');
-  const [isListening, setIsListening] = useState(false);
-  const [transcript, setTranscript] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [embedUrl, setembedUrl] = useState(messages['en'].embedUrl);
   const [schemes, setSchemes] = useState<Scheme[]>([]);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [responseMessage, setResponseMessage] = useState('');
-  
+  const [showChatBot, setShowChatBot] = useState(false); // New state to toggle ChatBot view
+
   const recognitionRef = useRef<SpeechRecognition | null>(null);
 
-  // Initialize speech recognition
   useEffect(() => {
-    if (typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
-      // Browser supports speech recognition
-      const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognitionRef.current = new SpeechRecognitionAPI();
-      recognitionRef.current.continuous = true;
-      recognitionRef.current.interimResults = true;
+    setembedUrl(messages[language as keyof typeof messages].embedUrl);
+  }, [language]);
 
-      recognitionRef.current.onresult = (event) => {
-        const current = event.resultIndex;
-        if (event.results[current].isFinal) {
-          const result = event.results[current][0].transcript;
-          setTranscript(result);
-          
-          // Auto-process when speech recognition ends
-          if (result.trim() !== '') {
-            processQuery(result);
-          }
-        } else {
-          // Update transcript with interim results
-          const interim = event.results[current][0].transcript;
-          setTranscript(interim);
-        }
-      };
-
-      recognitionRef.current.onerror = (event) => {
-        console.error('Speech recognition error', event.error);
-        setIsListening(false);
-        toast({
-          title: "Error",
-          description: `Speech recognition error: ${event.error}`,
-          variant: "destructive"
-        });
-      };
-
-      recognitionRef.current.onend = () => {
-        setIsListening(false);
-      };
-      
-      // Set language for speech recognition based on user selection
-      const updateRecognitionLanguage = () => {
-        if (recognitionRef.current) {
-          switch(language) {
-            case 'en':
-              recognitionRef.current.lang = 'en-US';
-              break;
-            case 'hi':
-              recognitionRef.current.lang = 'hi-IN';
-              break;
-            case 'kn':
-              recognitionRef.current.lang = 'kn-IN';
-              break;
-            default:
-              recognitionRef.current.lang = 'en-US';
-          }
-        }
-      };
-      
-      updateRecognitionLanguage();
-    } else {
-      // Browser doesn't support speech recognition
-      toast({
-        title: "Not supported",
-        description: "Your browser doesn't support speech recognition. Try using Chrome.",
-        variant: "destructive"
-      });
-    }
-  }, [language]); // Re-initialize when language changes
-
-  // Function to handle language change
   const handleLanguageChange = (lang: string) => {
     setLanguage(lang);
-    // Reset state when language changes
-    setTranscript('');
     setSchemes([]);
     setResponseMessage('');
+    setembedUrl(messages[lang as keyof typeof messages].embedUrl);
   };
 
-  // Function to start speech recognition
-  const startListening = () => {
-    if (recognitionRef.current) {
-      try {
-        recognitionRef.current.start();
-        setIsListening(true);
-        setTranscript('');
-        setIsProcessing(false);
-      } catch (error) {
-        console.error('Error starting speech recognition:', error);
-        toast({
-          title: "Error",
-          description: "Failed to start speech recognition. Please try again.",
-          variant: "destructive"
-        });
-      }
-    }
-  };
-
-  // Function to stop speech recognition
-  const stopListening = () => {
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-      setIsListening(false);
-    }
-  };
-
-  // Function to handle text input submission
-  const handleTextSubmit = (text: string) => {
-    setTranscript(text);
-    processQuery(text);
-  };
-
-  // Function to process the query and find matching schemes
-  const processQuery = (query: string) => {
-    setIsProcessing(true);
-    
-    // Simulate API call delay
-    setTimeout(() => {
-      // For the demo, filter schemes based on some keywords in the query
-      const lowerQuery = query.toLowerCase();
-      
-      let filteredSchemes = sampleSchemes;
-      
-      // Simple keyword matching (in a real app, use NLP/vector search)
-      if (lowerQuery.includes("loan") || lowerQuery.includes("ऋण") || lowerQuery.includes("ಸಾಲ")) {
-        filteredSchemes = sampleSchemes.filter(scheme => 
-          scheme.category.includes("loan") || 
-          scheme.description.toLowerCase().includes("loan") ||
-          scheme.name.toLowerCase().includes("loan") ||
-          scheme.name === "MUDRA Loan (Pradhan Mantri MUDRA Yojana)" ||
-          scheme.name === "PMEGP (Prime Minister's Employment Generation Programme)"
-        );
-      } 
-      else if (lowerQuery.includes("farmer") || lowerQuery.includes("agriculture") || 
-               lowerQuery.includes("किसान") || lowerQuery.includes("ರೈತ")) {
-        filteredSchemes = sampleSchemes.filter(scheme => 
-          scheme.category.includes("agriculture") || 
-          scheme.sector === "Agriculture"
-        );
-      }
-      else if (lowerQuery.includes("pension") || lowerQuery.includes("elderly") || 
-               lowerQuery.includes("पेंशन") || lowerQuery.includes("ಪಿಂಚಣಿ")) {
-        filteredSchemes = sampleSchemes.filter(scheme => 
-          scheme.category.includes("pension") || 
-          scheme.name === "NSAP (National Social Assistance Programme)"
-        );
-      }
-      
-      // Limit to top 3 schemes
-      filteredSchemes = filteredSchemes.slice(0, 3);
-      
-      setSchemes(filteredSchemes);
-      
-      // Generate a response message based on the language
-      let message = "";
-      if (language === "en") {
-        message = `Based on your query, I found ${filteredSchemes.length} relevant schemes that might help you.`;
-      } else if (language === "hi") {
-        message = `आपकी पूछताछ के आधार पर, मुझे ${filteredSchemes.length} प्रासंगिक योजनाएं मिलीं जो आपकी मदद कर सकती हैं।`;
-      } else if (language === "kn") {
-        message = `ನಿಮ್ಮ ಪ್ರಶ್ನೆಯ ಆಧಾರದ ಮೇಲೆ, ನಾನು ${filteredSchemes.length} ಸಂಬಂಧಿತ ಯೋಜನೆಗಳನ್ನು ಕಂಡುಕೊಂಡಿದ್ದೇನೆ ಅವು ನಿಮಗೆ ಸಹಾಯ ಮಾಡಬಹುದು.`;
-      }
-      
-      setResponseMessage(message);
-      setIsProcessing(false);
-      
-      toast({
-        title: "Results found!",
-        description: `Found ${filteredSchemes.length} schemes matching your query.`,
-      });
-    }, 3000);
-  };
-
-  // Function to handle example query clicks
-  const handleExampleClick = (query: string) => {
-    setTranscript(query);
-    processQuery(query);
+  const toggleChatBot = () => {
+    setShowChatBot(!showChatBot);
   };
 
   return (
     <div className="min-h-screen bg-accent/30">
       <Header />
-      
       <main className="container max-w-7xl mx-auto px-4 py-8">
         <div className="text-center mb-10">
           <h1 className="text-3xl md:text-4xl font-bold text-primary mb-3">
@@ -245,74 +72,54 @@ const Index = () => {
             {messages[language as keyof typeof messages].subtitle}
           </p>
         </div>
-        
+
         <div className="flex flex-col items-center mb-8">
-          <LanguageSelector 
-            currentLanguage={language} 
-            onLanguageChange={handleLanguageChange} 
+          <LanguageSelector
+            currentLanguage={language}
+            onLanguageChange={handleLanguageChange}
           />
-          
-          <TranscriptDisplay 
-            transcript={transcript} 
-            isProcessing={isProcessing} 
-          />
-          
-          <div className="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-6 mb-6">
-            <div className="flex flex-col items-center">
-              <MicrophoneButton 
-                isListening={isListening} 
-                onStartListening={startListening} 
-                onStopListening={stopListening} 
-              />
-              <p className="text-sm text-gray-500 mt-2">
-                {isListening ? "Listening..." : "Speak"}
-              </p>
-            </div>
-            
-            <div className="text-sm text-gray-500 hidden md:block">or</div>
-            
-            <TextInput 
-              placeholder={messages[language as keyof typeof messages].placeholder}
-              onSubmit={handleTextSubmit}
-              buttonText={messages[language as keyof typeof messages].searchButton}
-            />
-          </div>
         </div>
-        
-        {/* Example queries section */}
-        {!transcript && !isProcessing && (
-          <div className="max-w-2xl mx-auto mb-12">
-            <h3 className="text-center text-gray-500 mb-4">Try asking about:</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {[
-                messages[language as keyof typeof messages].example1,
-                messages[language as keyof typeof messages].example2,
-                messages[language as keyof typeof messages].example3,
-              ].map((example, index) => (
-                <button
-                  key={index}
-                  className="bg-white p-3 rounded-lg text-left shadow-sm hover:shadow-md transition-shadow border border-gray-100"
-                  onClick={() => handleExampleClick(example)}
-                >
-                  <p className="text-sm text-gray-700">{example}</p>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-        
-        <ResponseSection 
-          schemes={schemes} 
-          isLoading={isProcessing} 
+
+        {/* Go to Chat or Go to Audio Button */}
+        <div className="text-center mb-8">
+          <button
+            onClick={toggleChatBot}
+            className="px-4 py-2 bg-primary text-white rounded-md shadow-md hover:bg-primary-dark transition"
+          >
+            {showChatBot
+              ? messages[language as keyof typeof messages].goToAudio
+              : messages[language as keyof typeof messages].goToChat}
+          </button>
+        </div>
+
+        {/* Conditional Rendering of ChatBot and Audio Chatbot */}
+        <div className="transition-all duration-700 ease-in-out">
+          {showChatBot ? (
+            <ChatBot />
+          ) : (
+            <iframe
+              key={embedUrl}
+              src={embedUrl}
+              height="700px"
+              width={"80%"}
+              allow="microphone"
+              className="mx-auto"
+            ></iframe>
+          )}
+        </div>
+
+        <ResponseSection
+          schemes={schemes}
+          isLoading={isProcessing}
           language={language}
           responseMessage={responseMessage}
         />
       </main>
-      
+
       <footer className="bg-white border-t border-gray-200 py-6 mt-12">
         <div className="container max-w-7xl mx-auto px-4 text-center text-gray-600">
           <p className="mb-2">सार्थी<span className="text-secondary">AI</span> - Your AI assistant for government schemes</p>
-          <p className="text-sm">Built with ❤️ for hackathon - {new Date().getFullYear()}</p>
+          <p className="text-sm">Built with ❤️</p>
         </div>
       </footer>
     </div>
