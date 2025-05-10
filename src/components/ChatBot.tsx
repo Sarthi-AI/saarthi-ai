@@ -6,7 +6,6 @@ const ChatBot: React.FC = () => {
             <iframe
                 src="https://www.chatbase.co/chatbot-iframe/LKV4r5gC2r5lscZyDQb9F"
                 style={{ height: '100%', minHeight: '700px', width: '80%', margin: 'auto', display: 'block' }}
-                frameBorder="0"
                 title="ChatBot"
             ></iframe>
         </div>
