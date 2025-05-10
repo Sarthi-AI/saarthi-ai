@@ -2,11 +2,11 @@
 
 ## Team 24
 
-[**Noel George**  ](https://github.com/NOL10)
-[**Vineet Kushwaha**  ](https://github.com/vineet-k09)
-[**Shyamkrishna**  ](https://github.com/shyamkrishnabnair)
-[**Abhishek KM**  ](https://github.com/a8h1km)
-[**Rahul**](https://github.com/Rahul-Vashist)
+[**Noel George**  ](https://github.com/NOL10) <br>
+[**Vineet Kushwaha**  ](https://github.com/vineet-k09) <br>
+[**Shyamkrishna**  ](https://github.com/shyamkrishnabnair) <br>
+[**Abhishek KM**  ](https://github.com/a8h1km) <br>
+[**Rahul**](https://github.com/Rahul-Vashist)<br>
 
 ## 🚀 Project Overview
 
