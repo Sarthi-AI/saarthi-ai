@@ -32,7 +32,7 @@ const Header = () => {
           <Link to="/grievance" className="text-gray-700 hover:text-primary transition-colors">
             File Grievance
           </Link>
-          <Link to="/dashbord" className="text-gray-700 hover:text-primary transition-colors">
+          <Link to="/dashboard" className="text-gray-700 hover:text-primary transition-colors">
             Scheme Dashboard
           </Link>
         </div>

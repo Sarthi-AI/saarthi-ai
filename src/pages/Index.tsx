@@ -17,8 +17,8 @@ const messages = {
     example2: "I'm a farmer looking for subsidies for irrigation",
     example3: "Are there schemes for education loans?",
     embedUrl: "https://app.toughtongueai.com/embed/minimal/681edba37b6fcab35eb0da42?pulse=true&bg=blue-900&hidePoweredBy=true&transcribe=true&buttonStartLabel=Ask+Query&buttonStopLabel=Done",
-    goToChat: "Go to Audio",
-    goToAudio: "Go to Chat"
+    goToChat: "Go to Chat",
+    goToAudio: "Go to Audio"
   },
   kn: {
     title: "ನಿಮಗೆ ಸರಿಯಾದ ಸರ್ಕಾರಿ ಯೋಜನೆಯನ್ನು ಹುಡುಕಿ",
