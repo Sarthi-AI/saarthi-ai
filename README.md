@@ -1,73 +1,66 @@
-# Welcome to your Lovable project
+# 🌟 SaarthiAI — Build4Community Hackathon 🌟
 
-## Project info
+## Team 24
 
-**URL**: https://lovable.dev/projects/08e2007a-0128-46f3-ae19-f4e3fa0a12d9
+[**Noel George**  ](https://github.com/NOL10) <br>
+[**Vineet Kushwaha**  ](https://github.com/vineet-k09) <br>
+[**Shyamkrishna**  ](https://github.com/shyamkrishnabnair) <br>
+[**Abhishek KM**  ](https://github.com/a8h1km) <br>
+[**Rahul**](https://github.com/Rahul-Vashist)<br>
 
-## How can I edit this code?
+## 🚀 Project Overview
 
-There are several ways of editing your application.
+SaarthiAI is an **AI-powered voice assistant** designed to help citizens discover and apply for government schemes with ease.
 
-**Use Lovable**
+✨ **What it does:**
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/08e2007a-0128-46f3-ae19-f4e3fa0a12d9) and start prompting.
+- Listens to user queries in **Kannada and English**
+- Provides voice responses to guide users through scheme details and application steps
 
-Changes made via Lovable will be committed automatically to this repo.
+---
 
-**Use your preferred IDE**
+## 💡 How It Works
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- **Voice Interaction:**  
+  Supports input and output in Kannada and English for inclusive communication.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- **Data Source & Processing:**  
+  → Pulls data from official portals like MyScheme and India.gov.in  
+  → Cleans and structures scheme details (name, description, eligibility, state, sector, apply_link)  
+  → Uses sentence transformers to embed and enable meaningful search.
 
-Follow these steps:
+- **Architecture:**  
+  🔧 **Backend:** Node.js + TypeScript for robust API handling  
+  🧠 **AI Engine:** Vector store built from `schemes.json`  
+  🎙 **Speech Layer:** ToughTongue AI, with fine-tuned models  
+  🎨 **Frontend:** Vite + React + TailwindCSS for a responsive, mobile-friendly experience
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+---
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
+## 📦 Tech Stack
 
 - Vite
-- TypeScript
 - React
-- shadcn-ui
-- Tailwind CSS
+- TypeScript
+- TailwindCSS
+- Node.js
+- ToughTongue AI
+- Chatbase API
 
-## How can I deploy this project?
+---
 
-Simply open [Lovable](https://lovable.dev/projects/08e2007a-0128-46f3-ae19-f4e3fa0a12d9) and click on Share -> Publish.
+## 📂 Data & Storage
 
-## Can I connect a custom domain to my Lovable project?
+- **Source:** MyScheme, India.gov.in
+- **Preprocessed Schemes:** PMEGP, AIF, DAY-NULM, NSAP, MUDRA
+- **Storage:** Local JSON file for offline access
 
-Yes, you can!
+---
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## ✨ Highlights
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+✅ Mobile-responsive  
+✅ User-friendly UI with mic animations  
+✅ Offline access  
+✅ Multilingual voice support  
+✅ Community-focused: Built to empower citizens

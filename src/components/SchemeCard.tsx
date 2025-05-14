@@ -4,13 +4,14 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 
 export interface Scheme {
+  id: string;
   name: string;
   description: string;
   eligibility: string;
   category: string[];
   state: string;
   sector: string;
-  language: string;
+  // language: string;
   apply_link: string;
 }
 
@@ -20,7 +21,7 @@ interface SchemeCardProps {
   animationDelay?: number;
 }
 
-const SchemeCard: React.FC<SchemeCardProps> = ({ scheme, language, animationDelay = 0 }) => {
+const SchemeCard: React.FC<SchemeCardProps> = ({ scheme, animationDelay = 0 }) => {
   return (
     <Card className="animate-fade-in w-full" style={{ animationDelay: `${animationDelay}ms` }}>
       <CardHeader className="bg-primary-light rounded-t-lg pb-2">
@@ -37,7 +38,7 @@ const SchemeCard: React.FC<SchemeCardProps> = ({ scheme, language, animationDela
         </div>
         <div className="flex flex-wrap gap-2 mt-3">
           {scheme.category.map((tag, index) => (
-            <span 
+            <span
               key={index}
               className="bg-accent px-2 py-1 rounded-full text-xs font-medium text-primary"
             >
@@ -47,8 +48,8 @@ const SchemeCard: React.FC<SchemeCardProps> = ({ scheme, language, animationDela
         </div>
       </CardContent>
       <CardFooter className="border-t pt-3 flex justify-end">
-        <Button 
-          className="bg-secondary hover:bg-secondary-dark" 
+        <Button
+          className="bg-secondary hover:bg-secondary-dark"
           onClick={() => window.open(scheme.apply_link, '_blank')}
         >
           Apply Now
