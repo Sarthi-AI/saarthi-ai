@@ -6,7 +6,7 @@
 [**Vineet Kushwaha**  ](https://github.com/vineet-k09) <br>
 [**Shyamkrishna**  ](https://github.com/shyamkrishnabnair) <br>
 [**Abhishek KM**  ](https://github.com/a8h1km) <br>
-[**Rahul Vashist**](https://github.com/Rahul-Vashist)<br>
+[**Rahul**](https://github.com/Rahul-Vashist)<br>
 
 ## 🚀 Project Overview
 
